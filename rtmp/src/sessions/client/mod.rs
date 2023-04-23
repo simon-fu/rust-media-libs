@@ -857,7 +857,16 @@ impl ClientSession {
     fn handle_publish_start(&mut self) -> ClientResult {
         match self.current_state {
             ClientState::PublishRequested => (),
+
+            // by simon
+            // 百度百家号会返回两个 NetStream.Publish.Start 
+            // 只处理第一个，后面的忽略掉
+            ClientState::Publishing => { return Ok(vec![]) }, 
             _ => {
+                // by simon
+                // let bt = std::backtrace::Backtrace::force_capture();
+                // println!("{}", bt);
+
                 return Err(ClientSessionError::SessionInInvalidState {
                     current_state: self.current_state.clone(),
                 });
