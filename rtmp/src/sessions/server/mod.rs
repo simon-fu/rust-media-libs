@@ -168,7 +168,25 @@ impl ServerSession {
             match self.deserializer.get_next_message(bytes_to_process)? {
                 None => break,
                 Some(payload) => {
-                    let message = payload.to_rtmp_message()?;
+                    
+                    // println!("=== rtmp payload: type_id {}, {:?}, stream_id {}, payload {}", payload.type_id, payload.timestamp, payload.message_stream_id, payload.data.len());
+
+                    let rr = payload.to_rtmp_message();
+                    let message = match rr {
+                        Ok(msg) => msg,
+                        Err(e) => {
+                            tracing::warn!(
+                                "parse rtmp message failed, type_id {}, {:?}, stream_id {}, payload {}, error [{e:?}]",
+                                payload.type_id, 
+                                payload.timestamp, 
+                                payload.message_stream_id, 
+                                payload.data.len(),
+                            );
+                            bytes_to_process = &[];
+                            continue;
+                        },
+                    };
+                    // println!("  payload msg: {message:?}");
 
                     let mut message_results = match message {
                         RtmpMessage::Abort { stream_id } => self.handle_abort_message(stream_id)?,
