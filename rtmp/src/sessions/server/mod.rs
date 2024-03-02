@@ -171,6 +171,12 @@ impl ServerSession {
                     
                     // println!("=== rtmp payload: type_id {}, {:?}, stream_id {}, payload {}", payload.type_id, payload.timestamp, payload.message_stream_id, payload.data.len());
 
+                    // iOS app 小熊录屏 1.7.8 会发送不符合标准的 amf0 data
+                    // 错误日志： parse rtmp message failed, type_id 18, RtmpTimestamp { value: 0 }, stream_id 1, payload 681, error [Amf0DeserializationError(UnknownMarker { marker: 116 })]
+                    // 其中 116=0x74 没在amf0 标准第2章 AMF 0 Data Types 里
+                    // https://rtmp.veriskope.com/pdf/amf0-file-format-specification.pdf
+
+                    
                     let rr = payload.to_rtmp_message();
                     let message = match rr {
                         Ok(msg) => msg,
