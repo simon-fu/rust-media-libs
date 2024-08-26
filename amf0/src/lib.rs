@@ -53,6 +53,7 @@ pub enum Amf0Value {
     StrictArray(Vec<Amf0Value>),
     Null,
     Undefined,
+    Raw(Vec<u8>),
 }
 
 impl Amf0Value {

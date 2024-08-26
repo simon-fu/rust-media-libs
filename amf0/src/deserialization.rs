@@ -83,8 +83,14 @@ fn parse_string<R: Read>(bytes: &mut R) -> Result<Amf0Value, Amf0Deserialization
     let mut buffer: Vec<u8> = vec![0_u8; length as usize];
     bytes.read(&mut buffer)?;
 
-    let value = String::from_utf8(buffer)?;
-    Ok(Amf0Value::Utf8String(value))
+    // let value = String::from_utf8(buffer)?;
+    // Ok(Amf0Value::Utf8String(value))
+
+    let r = String::from_utf8(buffer);
+    match r {
+        Ok(v) => Ok(Amf0Value::Utf8String(v)),
+        Err(e) => Ok(Amf0Value::Raw(e.into_bytes())),
+    }
 }
 
 fn parse_object<R: Read>(bytes: &mut R) -> Result<Amf0Value, Amf0DeserializationError> {

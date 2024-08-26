@@ -27,6 +27,7 @@ fn serialize_value(value: &Amf0Value, bytes: &mut Vec<u8>) -> Result<(), Amf0Ser
         Amf0Value::Utf8String(ref val) => serialize_string(&val, bytes),
         Amf0Value::Object(ref val) => serialize_object(&val, bytes),
         Amf0Value::StrictArray(ref val) => serialize_strict_array(&val, bytes),
+        Amf0Value::Raw(_) => unimplemented!(),
     }
 }
 
