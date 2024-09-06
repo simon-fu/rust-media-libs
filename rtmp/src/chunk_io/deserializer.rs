@@ -368,6 +368,10 @@ impl ChunkDeserializer {
     ) -> Result<ParseStageResult, ChunkDeserializationError> {
         let mut length = self.current_header.message_length as usize;
         let current_payload_length = self.current_payload_data.len();
+        if length < current_payload_length {
+            let error = std::io::Error::new(std::io::ErrorKind::InvalidData, format!("invalid message_length [{length}], current_payload_length [{current_payload_length}]"));
+            return Err(ChunkDeserializationError::Io(error));
+        }
         let remaining_bytes = length - current_payload_length;
         if length > self.max_chunk_size as usize {
             length = min(remaining_bytes, self.max_chunk_size as usize);
